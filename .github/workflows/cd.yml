@@ -3,7 +3,10 @@ name: CD - Deploy to EC2 with Docker
 on:
   push:
     branches:
-      - sprint3-workflows  
+      - '*'
+  pull_request:
+    branches:
+      - '*'
   workflow_dispatch:
 
 jobs:
