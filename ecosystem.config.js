@@ -2,7 +2,7 @@
       apps: [
         {
           name: 'pet-adoption-backend',
-          cwd: '/home/stamp7ven/CS360_Project/backend',
+          cwd: `${__dirname}/backend`,
           script: 'npm',
           args: 'start',
           env: {
