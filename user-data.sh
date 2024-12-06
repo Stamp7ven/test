@@ -12,9 +12,6 @@ sudo systemctl enable docker
 sudo usermod -aG docker ubuntu
 newgrp docker
 
-sudo docker pull ${DOCKER_USERNAME}/petadopt_frontend
-sudo docker run -d -p 3000:3000 --name cs360_frontend_container ${DOCKER_USERNAME}/petadopt_frontend:latest
-
 sudo docker pull ${DOCKER_USERNAME}/petadopt_backend
 sudo docker run -d -p 1337:1337 --name cs360_backend_container \
           -e APP_KEYS=$(openssl rand -base64 32) \
@@ -23,3 +20,6 @@ sudo docker run -d -p 1337:1337 --name cs360_backend_container \
           -e TRANSFER_TOKEN_SALT=$(openssl rand -base64 32) \
           -e JWT_SECRET=$(openssl rand -base64 32) \
           ${DOCKER_USERNAME}/petadopt_backend:latest
+
+sudo docker pull ${DOCKER_USERNAME}/petadopt_frontend
+sudo docker run -d -p 3000:3000 --name cs360_frontend_container ${DOCKER_USERNAME}/petadopt_frontend:latest
