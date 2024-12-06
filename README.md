@@ -30,6 +30,40 @@ The web application serves as a platform for managing and facilitating pet adopt
 
 The backend for this project is based on the Pet Adoption Backend developed by Hubertnare, which is built using Strapi V4. We appreciate their contribution and have integrated their solution into our project.
 
+## Table of Contents
+
+- [CS360 1/2567 Term Project: FurEveryHome](#cs360-12567-term-project-fureveryhome)
+  - [Group Information](#group-information)
+  - [Members](#members)
+  - [Project Goal](#project-goal)
+    - [Features](#features)
+    - [Technologies Used](#technologies-used)
+  - [Setting Up an EC2 Instance](#setting-up-an-ec2-instance)
+  - [System Requirements](#system-requirements)
+  - [How to Deploy and Run the Project Manually](#how-to-deploy-and-run-the-project-manually)
+  - [How to Deploy and Run the Project Using the Provided Bash Script](#how-to-deploy-and-run-the-project-using-the-provided-bash-script)
+  - [Unit and Integration Testing Overview](#unit-and-integration-testing-overview)
+    - [Test Feature](#test-feature)
+    - [Testing Tools Used](#testing-tools-used)
+    - [CI/CD Integration with GitHub Actions](#cicd-integration-with-github-actions)
+  - [Setting Up Tests](#setting-up-tests)
+  - [Running Tests & CI Pipeline Process](#running-tests)
+  - [Test File Structure](#test-file-structure)
+  - [CI Configuration](#ci-configuration)
+  - [Test Coverage Include Continuous Integration](#test-coverage)
+  - [Viewing Test Results](#viewing-test-results)
+  - [Adding New Tests](#adding-new-tests)
+  - [CI/CD Pipeline Overview](#cicd-pipeline-overview)  
+    - [CI/CD Pipeline Structure](#cicd-pipeline-structure)  
+      - [Continuous Integration (CI)](#1-continuous-integration-ci)  
+      - [Continuous Deployment (CD)](#2-continuous-deployment-cd)  
+    - [Workflow Configuration](#workflow-configuration)  
+    - [Triggering the CI/CD Pipeline](#triggering-the-cicd-pipeline)  
+      - [Automatic Triggers](#1-automatic-triggers)  
+      - [Manual Trigger](#2-manual-trigger)  
+    - [Environment Variables and Secrets](#environment-variables-and-secrets)   
+    - [Monitoring and Logs](#monitoring-and-logs)  
+
 ## Setting Up an EC2 Instance
 
 1. Log in to AWS Console
@@ -212,7 +246,7 @@ After selecting the Public role, you will see a list of available API permission
 - Save Changes
 Once you have configured the permissions as needed, click the `Save` button in the lower-right corner to apply the changes.
   
-## How to deploy and run the project using the provided bash script [Specify the bash script path in the repo]
+## How to deploy and run the project using the provided bash script 
 
 Ensure you are connected to your EC2 instance before proceeding. <br>
 
@@ -224,9 +258,9 @@ ssh -i <your-key.pem> ec2-user@<your-ec2-instance-ip>
 
 Follow these steps to deploy and run the project using the provided bash script. <br>
 **1. Set up and run the script**
-- Navigate to the utils/ directory :
+- Navigate to root directory :
 ```bash
-cd CS360_Project/utils/
+cd CS360_Project
 ```
 - Change permission deploy-script.sh and run script :
 ```bash
@@ -281,12 +315,44 @@ Once you have configured the permissions as needed, click the `Save` button in t
 
 
 ## Unit and Integration Testing Overview
-Our team uses the following tools for testing :
-- **Jest**: Used for unit testing individual functions or modules, ensuring that each component works as expected in isolation.
-- **Supertest**: Handles integration testing, focusing on how different parts of the application interact, especially useful for testing API endpoints.
-- **Babel**: Transpiles ES6+ JavaScript code to ensure compatibility with Jest, allowing the use of modern JavaScript features in tests.
-- **GitHub Actions**: Automates testing in CI/CD. Each push and pull request triggers the GitHub Actions workflow, running our test suite in various environments (e.g., macos-latest, ubuntu-24.04). This setup ensures consistent test results across platforms and notifies us immediately if any tests fail, providing valuable feedback on code quality before merging.
+We use Jest for unit testing and Supertest for integration testing in the pet-adoption project. Below is an overview of the test cases and features that are tested.
 
+### Total Test Cases
+- Unit Tests: 6 test cases
+- Integration Tests: 8 test cases
+- Total Test Cases: 14 test cases
+
+### Test Feature
+1. Unit Tests (6 test cases):
+Unit tests are designed to test individual functions or modules, ensuring that each component works as expected in isolation.
+- CreatePetEntry Component
+  - TC1 : Handles input changes from Create Pet Entry
+  - TC2 : Calls createNewPet on button click with correct data
+  - TC3 : Does not call createNewPet if required fields are not filled
+- EditPetEntry Component
+  - TC4 : Handles input changes from Edit Pet Entry
+  - TC5 : Calls updatePet on button click with correct data
+  - TC6 : Should not have the same values as the initial mock repo after editing
+    
+2. Integration Tests (8 test cases):
+Integration tests are used to validate how different parts of the application work together, ensuring the entire flow works as expected.
+- TC1 : CREATE a new pet entry (POST /api/pets)
+- TC2 : UPDATE an existing pet entry (PUT /api/pets/:id)
+- TC3 : GET all pets (GET /api/pets)
+- TC4 : Handle missing required fields (POST /api/pets with missing data)
+- TC5 : Handle updates for non-existing pet (PUT /api/pets/:id for non-existing ID)
+- TC6 : RETRIEVE a pet by ID (GET /api/pets/:id)
+- TC7 : DELETE a pet entry (DELETE /api/pets/:id)
+- TC8 : HANDLE retrieving a non-existing pet by ID (GET /api/pets/:id for non-existing ID)
+
+### Testing Tools Used
+- Jest: Used for unit testing, ensuring that individual functions (such as pet entry functions and form validation) work correctly in isolation.
+Supertest: Used for integration testing, focusing on API endpoints and the interaction between frontend and backend.
+- Babel: Transpiles ES6+ JavaScript code to ensure compatibility with Jest, allowing modern - 
+- JavaScript features in tests.
+
+### CI/CD Integration with GitHub Actions
+- GitHub Actions: Automates the testing process in CI/CD. Every push and pull request triggers the GitHub Actions workflow, which runs the test suite in various environments (e.g., macOS, Ubuntu). This ensures consistent test results across platforms and provides immediate feedback on any test failures, helping maintain code quality before merging.
 
 ## Setting Up Tests
 
@@ -571,7 +637,7 @@ npm test
 
 ## Adding New Tests
 
-Add new test files within the `src/__test__` directory, following these steps:
+Add new test files within the `src/__test__` or `backend/tests/` directory, following these steps:
 
 1. **Create Test Files**:
    - For **unit tests**, add files under `src/__test__/`.
@@ -609,3 +675,65 @@ npm test
   
 6. **Merge to Main Branch**:
    - After ensuring that all tests pass successfully, you can merge your branch into the main branch.
+
+## CI/CD Pipeline Overview
+
+This project integrates a **Continuous Integration (CI)** and **Continuous Deployment (CD)** pipeline to automate the testing, building, and deployment processes. This ensures consistent quality, fast feedback, and efficient delivery of features and bug fixes.
+
+### CI/CD Pipeline Structure
+
+#### 1. Continuous Integration (CI)
+The CI pipeline runs every time code is pushed to the repository or a pull request is made. The key components include:
+
+- **Automated Testing**:
+  - **Unit Tests**: The pipeline runs all the automated unit tests using Jest to ensure no breaking changes are introduced.
+  - **Integration Tests**: Ensures that the various parts of the application interact correctly.
+
+- **Build Verification**:
+  - The application is built for different environments (e.g., development, production) to ensure that there are no build issues. It checks that the application works across different versions of Node.js.
+
+#### 2. Continuous Deployment (CD)
+Once the CI pipeline successfully completes, the CD pipeline is responsible for deploying the application to different environments, ensuring the latest version is live without manual intervention. The key components include:
+
+- **Staging Deployment**: Automatically deploys to a staging environment to validate the latest changes in a live setting.
+- **Production Deployment**: After successful tests in staging, the application is deployed to the production environment.
+- **Environment Variables**: Deployment steps use environment variables for configuration (e.g., API keys, database URLs) to keep sensitive information secure.
+
+### Workflow Configuration
+
+The CI/CD workflows are defined as YAML files within the .github/workflows directory. These workflows define each of the jobs, such as testing, building, and deploying, and specify when and how they should be triggered.
+
+The key workflows in this project include:
+
+- **Test Workflow**: test-suite.yml  
+  This workflow runs on each push or pull request. It performs tasks such as running unit tests and integration tests.
+
+-  **CI Docker Workflow**: ci-docker.yml  
+  This workflow builds and tests the Docker container for the application. It ensures that the application works correctly within the container environment, which is especially important for deployment consistency.
+
+- **Deployment Workflow**: cd.yml  
+  This workflow is triggered manually or automatically upon merging into the main branch. It handles deployment to the staging and production environments.
+
+### Triggering the CI/CD Pipeline
+
+#### 1. Automatic Triggers
+- **Push to Branch**: The pipeline is triggered when changes are pushed to any branch, especially the main branch.
+- **Pull Requests**: Whenever a pull request is created or updated, the CI pipeline will run to ensure the new code does not break existing functionality.
+
+#### 2. Manual Trigger
+- **GitHub Actions**: You can also manually trigger the workflow from the GitHub interface. Navigate to the "Actions" tab, select the desired workflow, and click "Run workflow" to trigger the process.
+
+### Environment Variables and Secrets
+Environment variables and secrets such as database connection strings, API keys, and other sensitive data are stored securely in GitHub's Secrets and are accessed within the workflows using ${{ secrets.SECRET_NAME }}
+
+## How Secrets Are Stored in GitHub
+1. Navigate to the Settings tab of your repository.
+2. Select Secrets and variables > Actions from the side menu.
+3. Click New repository secret to add a new secret.
+4. Enter the name of the secret (e.g., DOCKER_USERNAME) and its value.
+5. Save the secret.
+
+### Monitoring and Logs
+- **Pipeline Logs**: Each step of the pipeline generates logs that can be accessed in the GitHub Actions interface. If any step fails, these logs can be examined to identify the issue.
+  
+- **Notifications**: You can set up GitHub notifications or integrate with Slack or email to notify the team when a build fails or succeeds.
