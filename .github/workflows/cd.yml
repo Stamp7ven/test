@@ -1,0 +1,109 @@
+name: CD - Deploy to EC2 with Docker
+
+on:
+  push:
+    branches:
+      - '*'
+  pull_request:
+    branches:
+      - '*'
+  workflow_dispatch:
+
+jobs:
+  check-image-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout Repository
+        uses: actions/checkout@v3    
+
+      # Step 2: Check if Docker Image Exists
+      - name: Check if Docker Image petadopt_frontend Exists
+        id: check_image_frontend
+        run: |
+          REPOSITORY="${{ secrets.DOCKER_USERNAME }}/petadopt_frontend"  
+          TAG="latest"
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -u "${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_TOKEN }}" https://hub.docker.com/v2/repositories/${REPOSITORY}/tags/${TAG}/)
+          if [ "$RESPONSE" -ne 200 ]; then
+              echo "Docker image not found. Exiting workflow."
+              exit 1
+          fi
+          echo "Docker image petadopt_frontend exists. Proceeding to deployment."
+
+      - name: Check if Docker Image petadopt_backend Exists
+        id: check_image_backend
+        run: |
+          REPOSITORY="${{ secrets.DOCKER_USERNAME }}/petadopt_backend"  
+          TAG="latest"
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -u "${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_TOKEN }}" https://hub.docker.com/v2/repositories/${REPOSITORY}/tags/${TAG}/)
+          if [ "$RESPONSE" -ne 200 ]; then
+              echo "Docker image not found. Exiting workflow."
+              exit 1
+          fi
+          echo "Docker image petadopt_backend exists. Proceeding to deployment."
+
+      # Step 3: Set AWS Credentials in Environment Variables
+      - name: Set AWS Credentials
+        if: ${{ steps.check_image_backend.outcome == 'success' }} || ${{ steps.check_image_frontend.outcome == 'success' }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+        run: echo "AWS credentials set."
+
+      # Step 4: Create EC2 Instance and Deploy the Application
+      - name: Create EC2 Instance and Deploy the Application
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_SESSION_TOKEN: ${{ secrets.AWS_SESSION_TOKEN }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+        run: |
+          # Step 1: Create EC2 instance
+          INSTANCE_ID=$(aws ec2 run-instances \
+            --image-id ami-0866a3c8686eaeeba \
+            --instance-type t2.medium \
+            --key-name ${{ secrets.AWS_KP_NAME }} \
+            --security-group-ids ${{ secrets.AWS_SG_ID }} \
+            --user-data file://user-data.sh \
+            --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=pet adoption 15gb}]' \
+            --block-device-mappings '[{"DeviceName":"/dev/xvda","Ebs":{"VolumeSize":15,"VolumeType":"gp3"}}]' \
+            --query 'Instances[0].InstanceId' \
+            --output text)
+
+          echo "Instance ID: $INSTANCE_ID"
+
+          if [ $? -ne 0 ]; then
+            echo "Error: EC2 instance creation failed."
+            exit 1
+          fi
+
+          echo "EC2 instance created successfully with ID: $INSTANCE_ID"
+
+          # Step 2: Wait for instance to be running
+          INSTANCE_STATUS=$(aws ec2 describe-instances --instance-ids $INSTANCE_ID --query 'Reservations[0].Instances[0].State.Name' --output text)
+          echo "Instance status: $INSTANCE_STATUS"
+
+          if [ "$INSTANCE_STATUS" == "shutting-down" ]; then
+            echo "Error: Instance is shutting down. Exiting workflow."
+            exit 1
+          fi
+
+          aws ec2 wait instance-running --instance-ids $INSTANCE_ID
+          echo "Instance is now running."
+
+          # Step 3: Get Public DNS of the EC2 instance
+          INSTANCE_PUBLIC_DNS=$(aws ec2 describe-instances \
+            --instance-ids $INSTANCE_ID \
+            --query 'Reservations[0].Instances[0].PublicDnsName' \
+            --output text)
+          echo "Instance Public DNS: $INSTANCE_PUBLIC_DNS"
+
+          if [ $? -ne 0 ]; then
+            echo "Error: Docker container deployment failed."
+            exit 1
+          fi
+
+          echo "Docker container deployed successfully."

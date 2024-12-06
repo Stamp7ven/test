@@ -1,0 +1,142 @@
+name: CI - Test Source Code and Docker Image
+
+on:
+  push:
+    branches:
+      - sprint3-workflows
+    paths-ignore:
+      - 'README.md'
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - 'README.md'
+  workflow_dispatch:
+
+jobs:
+  # Step 1: Test Source Code
+#  test-source-code:
+#    runs-on: ubuntu-latest
+
+#    strategy:
+#      matrix:
+#        node-version: [16]
+
+#    steps:
+#      - name: Checkout Code
+#        uses: actions/checkout@v3
+
+#      - name: Set up Node.js
+#        uses: actions/setup-node@v3
+#        with:
+#          node-version: ${{ matrix.node-version }}
+
+#      - name: Install Dependencies
+#        run: npm install
+
+#      - name: Run Jest Tests 
+#        run: npm test
+
+  # Step 2: Build Docker Image
+  build-docker-frontend:
+#    needs: [build-docker-backend, test-docker-image-backend]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }} # Use the token here
+
+      - name: Build Docker Image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/petadopt_frontend:latest .
+
+      - name: Push Docker Image to DockerHub
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/petadopt_frontend:latest
+
+  build-docker-backend:
+#    needs: test-source-code #ต้อง test-source-code ก่อน build docker image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+          
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }} # Use the token here
+
+      - name: Build Docker Image
+        working-directory: ./backend
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/petadopt_backend:latest .
+
+      - name: Push Docker Image to DockerHub
+        working-directory: ./backend
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/petadopt_backend:latest
+
+  # Step 3: Test Docker Image
+  test-docker-image-backend:
+    needs: build-docker-backend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }} # Use the token here
+
+      - name: Pull and Run Docker Image
+        run: |
+          docker pull ${{ secrets.DOCKER_USERNAME }}/petadopt_backend:latest
+          docker run -d --name test-backend \
+          -e APP_KEYS=${{ secrets.APP_KEYS }} \
+          -e API_TOKEN_SALT=${{ secrets.API_TOKEN_SALT }} \
+          -e ADMIN_JWT_SECRET=${{ secrets.ADMIN_JWT_SECRET }} \
+          -e TRANSFER_TOKEN_SALT=${{ secrets.TRANSFER_TOKEN_SALT }} \
+          -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
+          ${{ secrets.DOCKER_USERNAME }}/petadopt_backend:latest
+
+      - name: Run Automated Tests in Docker Container
+        run: |
+          docker exec test-backend npm test   
+            
+      - name: Clean Up Docker Container
+        run: |
+          docker stop test-backend
+          docker rm test-backend
+          
+  test-docker-image-frontend:
+    needs: build-docker-frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }} # Use the token here
+
+      - name: Pull and Run Docker Image
+        run: |
+          docker pull ${{ secrets.DOCKER_USERNAME }}/petadopt_frontend:latest
+          docker run -d --name test-frontend ${{ secrets.DOCKER_USERNAME }}/petadopt_frontend:latest
+
+      - name: Run Automated Tests in Docker Container
+        run: |
+          docker exec test-frontend npm test 
+            
+      - name: Clean Up Docker Container
+        run: |
+          docker stop test-frontend
+          docker rm test-frontend

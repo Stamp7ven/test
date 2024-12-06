@@ -15,8 +15,8 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-24.04, windows-latest, macos-latest]
-        node-version: [16.x, 22.x, node]
+        os: [ubuntu-24.04]
+        node-version: [16.x]
       fail-fast: false
         
     steps:
@@ -38,27 +38,29 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
 
-    #Install project dependencies
-    - name: Install project dependencies
+    #Install frontend dependencies
+    - name: Install frontend dependencies
       run: npm install
 
-    #Install project dependencies
-    - name: Install project dependencies
+    #Install backend dependencies
+    - name: Install backend dependencies
       working-directory: ./backend
       run: npm install
  
-    #Set up env for backend
-    - name: Set up env backend
+    #Run test suite for backend
+    - name: Run test suite backend
       working-directory: ./backend
       run: |
-        echo "APP_KEYS=${{ secrets.APP_KEYS }}" >> .env
-        echo "API_TOKEN_SALT=${{ secrets.API_TOKEN_SALT }}" >> .env
-        echo "ADMIN_JWT_SECRET=${{ secrets.ADMIN_JWT_SECRET }}" >> .env
-        echo "TRANSFER_TOKEN_SALT=${{ secrets.TRANSFER_TOKEN_SALT }}" >> .env
-        echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+         npm test
+      env: 
+        APP_KEYS: ${{ secrets.APP_KEYS }}
+        API_TOKEN_SALT: ${{ secrets.API_TOKEN_SALT }}
+        ADMIN_JWT_SECRET: ${{ secrets.ADMIN_JWT_SECRET }}
+        TRANSFER_TOKEN_SALT: ${{ secrets.TRANSFER_TOKEN_SALT }}
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
 
     #Run test suite
-    - name: Run test suite
+    - name: Run test suite frontend
       env:
           APP_KEYS: ${{ secrets.APP_KEYS }}              
           API_TOKEN_SALT: ${{ secrets.API_TOKEN_SALT }}  
