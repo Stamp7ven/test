@@ -52,6 +52,7 @@ describe('Pet API', () => {
                 age: 3, // Ensure age is a number
                 location: 'Bangkok',
                 sex: 'Male',
+                ageType: 'Year',
             },
         };
 
@@ -71,6 +72,7 @@ describe('Pet API', () => {
         expect(response.body.age).toBe(newPet.age);  // Validate the response's age
         expect(response.body.location).toBe(newPet.location);  // Validate the response's location
         expect(response.body.sex).toBe(newPet.sex);  // Validate the response's sex
+        expect(response.body.ageType).toBe(newPet.ageType);  // Validate the response's ageType
 
         // Store the created pet ID for other tests
         testPetId = response.body.data.id;  // Update to access id correctly
@@ -89,6 +91,7 @@ describe('Pet API', () => {
                 age: 4,  // New age
                 location: 'Bangkok',  // Assuming location remains the same
                 sex: 'Male',  // Assuming sex remains the same
+                ageType: 'Year',
             },
         };
 
