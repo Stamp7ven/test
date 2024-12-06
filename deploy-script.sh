@@ -154,7 +154,7 @@ configPM2() {
       apps: [
         {
           name: 'pet-adoption-backend',
-          cwd: `${__dirname}/backend`,
+          cwd: `$current_dir/backend`,
           script: 'npm',
           args: 'start',
           interpreter: '/home/ubuntu/.nvm/versions/node/v16.20.2/bin/node',
