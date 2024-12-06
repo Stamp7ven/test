@@ -3,12 +3,12 @@ name: CI - Test Source Code and Docker Image
 on:
   push:
     branches:
-      - sprint3-workflows
+      - '*'
     paths-ignore:
       - 'README.md'
   pull_request:
     branches:
-      - main
+      - '*'
     paths-ignore:
       - 'README.md'
   workflow_dispatch:
