@@ -706,13 +706,29 @@ The CI/CD workflows are defined as YAML files within the .github/workflows direc
 The key workflows in this project include:
 
 - **Test Workflow**: test-suite.yml  
-  This workflow runs on each push or pull request. It performs tasks such as running unit tests and integration tests.
+  - Purpose: Executes unit and integration tests on every push or pull request.
+  - Trigger Conditions: A push is made to any branch and pull request is created or updated.
+  - Steps:
+	1. Checkout repository code.
+	2. Install dependencies with Yarn.
+	3. Run all tests using Jest and log results.
 
 -  **CI Docker Workflow**: ci-docker.yml  
-  This workflow builds and tests the Docker container for the application. It ensures that the application works correctly within the container environment, which is especially important for deployment consistency.
+  - Purpose: Builds and tests Docker containers to ensure consistency across environments.
+  - Trigger Conditions: A push is made to any branch and pull request is created or updated.
+  - Steps:
+	1. Build Docker images for the backend and frontend.
+	2. Log in to DockerHub and push the images tagged as latest.
+	3. Run all tests using Jest and log results.
 
 - **Deployment Workflow**: cd.yml  
-  This workflow is triggered manually or automatically upon merging into the main branch. It handles deployment to the staging and production environments.
+  - Purpose: Deploys the application to staging and production environments.
+  - Trigger A push is made to any branch and Manually triggered via workflow_dispatch.
+  - Steps:
+	1. Verify availability of Docker images on DockerHub.
+	2. Configure AWS credentials using GitHub Secrets.
+	3. reate an EC2 instance and deploy the application.
+  	4. Expose the backend and frontend services
 
 ### Triggering the CI/CD Pipeline
 
