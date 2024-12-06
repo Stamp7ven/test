@@ -154,14 +154,18 @@ configPM2() {
       apps: [
         {
           name: 'pet-adoption-backend',
-          cwd: '$current_dir/backend',
+          cwd: `${__dirname}/backend`,
           script: 'npm',
           args: 'start',
+          interpreter: '/home/ubuntu/.nvm/versions/node/v16.20.2/bin/node',
           env: {
             APP_KEYS: process.env.APP_KEYS,
             API_TOKEN_SALT: process.env.API_TOKEN_SALT,
             ADMIN_JWT_SECRET: process.env.ADMIN_JWT_SECRET,
             JWT_SECRET: process.env.JWT_SECRET,
+            PORT: process.env.PORT,
+            IP_ADDRESS: process.env.IP_ADDRESS,
+            HOST: process.env.HOST,
       NODE_ENV: 'production',
       },
     },
