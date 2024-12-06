@@ -152,13 +152,19 @@ yarn start
 - Open a new terminal and connect to the same EC2 instance. 
 - Change to the project directory and Change the IP address in http.js Before building the frontend, open the http.js file and update the url variable with the public IP of your EC2 instance :
 ```bash
-cd CS360_Project/src
-nano http.js
+cd CS360_Project
+cp .env.example .env
 ```
-- Replace old IP address (line 3) with your EC2 instance's public IP (e.g., "your-ec2-public-ip") and then
+- Update the .env file <br>
+Replace REACT_APP_STRAPI_IP_ADDRESS and REACT_APP_STRAPI_PORT with your EC2 instance's public IP and your strapi port then
 save and exit the editor (for nano, use CTRL + o, Enter, then  CTRL + x) :
-```javascript
-var url="your-ec2-public-ip";
+```bash
+#open .env file for modify
+nano .env
+```
+```bash
+REACT_APP_STRAPI_IP_ADDRESS=localhost
+REACT_APP_STRAPI_PORT=1337
 ```
 **9. Build and Run the Frontend**
 - Install dependencies, build and start the Frontend server :

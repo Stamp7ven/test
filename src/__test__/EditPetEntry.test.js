@@ -4,10 +4,15 @@ import EditPetEntry from '../components/EditPetEntry';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import { usePetContext } from '../contexts/PetContext';
+import { useDarkMode } from '../contexts/DarkModeContext';
 
 // Mock PetContext
 jest.mock('../contexts/PetContext', () => ({
     usePetContext: jest.fn(),
+}));
+
+jest.mock('../contexts/DarkModeContext', () => ({
+    useDarkMode: jest.fn(),
 }));
 
 describe('EditPetEntry Component', () => {
@@ -19,7 +24,8 @@ describe('EditPetEntry Component', () => {
         breed: 'Persian',
         age: "4",
         location: 'New York',
-        sex: 'Male'
+        sex: 'Male',
+        ageType: 'Year',
     };
 
     beforeEach(() => {
@@ -35,6 +41,10 @@ describe('EditPetEntry Component', () => {
             petId: mockPetId,
             petData: mockPetData
         });
+
+        useDarkMode.mockReturnValue({
+            darkMode: false,
+        });
     });
 
     // it should always pass this test case.
@@ -45,7 +55,8 @@ describe('EditPetEntry Component', () => {
         expect(screen.getByLabelText(/animal \*/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/breed/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/location/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/age/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/^age$/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/age type \*/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/sex \*/i)).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /edit pet entry/i })).toBeInTheDocument();
     });
@@ -72,8 +83,16 @@ describe('EditPetEntry Component', () => {
         // Simulate typing in the location input
         await userEvent.type(screen.getByLabelText(/location/i), 'New York');
 
+        // Open the select for age
+        const ageSelect = screen.getByLabelText(/age type \*/i);
+        await userEvent.click(ageSelect);
+
+        // Select the "Unknow" option from the dropdown
+        const unknowOption = await screen.findByText('Year');
+        await userEvent.click(unknowOption);
+
         // Simulate typing in the age input
-        await userEvent.type(screen.getByLabelText(/age/i), '4');
+        await userEvent.type(screen.getByLabelText(/^age$/i), '4');
 
         // Open the select for sex
         const sexSelect = screen.getByLabelText(/sex/i);
@@ -87,9 +106,10 @@ describe('EditPetEntry Component', () => {
         expect(screen.getByLabelText(/name/i)).toHaveValue('Charlie');
         expect(screen.getByLabelText(/breed/i)).toHaveValue('Persian');
         expect(screen.getByLabelText(/location/i)).toHaveValue('New York');
-        expect(screen.getByLabelText(/age/i)).toHaveValue(4);
+        expect(screen.getByLabelText(/^age$/i)).toHaveValue(4);
         expect(await screen.findByText('Cat')).toBeInTheDocument(); // Ensure the selected value is displayed
         expect(await screen.findByText('Male')).toBeInTheDocument(); // Ensure the selected value is displayed
+        expect(await screen.findByText('Year')).toBeInTheDocument(); // Ensure the selected value is displayed
     });
 
     // TC5 : Calls updatePet on button click with correct data
@@ -109,7 +129,12 @@ describe('EditPetEntry Component', () => {
 
         await userEvent.type(screen.getByLabelText(/location/i), 'New York');
 
-        await userEvent.type(screen.getByLabelText(/age/i), '4');
+        const ageSelect = screen.getByLabelText(/age type \*/i);
+        await userEvent.click(ageSelect);
+        const unknowOption = await screen.findByText('Year');
+        await userEvent.click(unknowOption);
+
+        await userEvent.type(screen.getByLabelText(/^age$/i), '4');
 
         const sexSelect = screen.getByLabelText(/sex/i);
         await userEvent.click(sexSelect);
@@ -131,6 +156,7 @@ describe('EditPetEntry Component', () => {
                     age: "4", // Keeping age as a string to match the received value
                     location: 'New York',
                     sex: 'Male',
+                    ageType: 'Year',
                 },
             })
         );
@@ -155,8 +181,13 @@ describe('EditPetEntry Component', () => {
         await userEvent.clear(screen.getByLabelText(/location/i));
         await userEvent.type(screen.getByLabelText(/location/i), 'Los Angeles');
 
-        await userEvent.clear(screen.getByLabelText(/age/i));
-        await userEvent.type(screen.getByLabelText(/age/i), '5');
+        const ageSelect = screen.getByLabelText(/age type \*/i);
+        await userEvent.click(ageSelect);
+        const unknowOption = await screen.findByText('Year');
+        await userEvent.click(unknowOption);
+
+        await userEvent.clear(screen.getByLabelText(/^age$/i));
+        await userEvent.type(screen.getByLabelText(/^age$/i), '5');
 
         const sexSelect = screen.getByLabelText(/sex/i);
         await userEvent.click(sexSelect);
@@ -178,6 +209,7 @@ describe('EditPetEntry Component', () => {
                     age: "5",                  // Changed from "4" to "5"
                     location: 'Los Angeles',   // Changed from 'New York' to 'Los Angeles'
                     sex: 'Female',             // Changed from 'Male' to 'Female'
+                    ageType: 'Year',
                 },
             })
         );

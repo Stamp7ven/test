@@ -4,10 +4,16 @@ import CreatePetEntry from '../components/CreatePetEntry';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import { usePetContext } from '../contexts/PetContext';
+import { useDarkMode } from '../contexts/DarkModeContext';
+
 
 // Mock PetContext at the top level
 jest.mock('../contexts/PetContext', () => ({
     usePetContext: jest.fn(),
+}));
+
+jest.mock('../contexts/DarkModeContext', () => ({
+    useDarkMode: jest.fn(),
 }));
 
 describe('CreatePetEntry Component', () => {
@@ -23,6 +29,10 @@ describe('CreatePetEntry Component', () => {
         usePetContext.mockReturnValue({
             createNewPet: mockCreateNewPet,
         });
+
+        useDarkMode.mockReturnValue({
+            darkMode: false,
+        });
     });
 
     // it should always pass this test case.
@@ -33,7 +43,8 @@ describe('CreatePetEntry Component', () => {
         expect(screen.getByLabelText(/animal \*/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/breed/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/location/i)).toBeInTheDocument();
-        expect(screen.getByLabelText(/age/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/^age$/i)).toBeInTheDocument();
+        expect(screen.getByLabelText(/age type \*/i)).toBeInTheDocument();
         expect(screen.getByLabelText(/sex \*/i)).toBeInTheDocument();
         expect(screen.getByRole('button', { name: /add pet entry/i })).toBeInTheDocument();
     });
@@ -60,8 +71,17 @@ describe('CreatePetEntry Component', () => {
         // Simulate typing in the location input
         await userEvent.type(screen.getByLabelText(/location/i), 'Bangkok');
 
+        // Open the select for age
+        const ageSelect = screen.getByLabelText(/age type \*/i);
+        await userEvent.click(ageSelect);
+
+        // Select the "Unknow" option from the dropdown
+        const unknowOption = await screen.findByText('Year');
+        await userEvent.click(unknowOption);
+
         // Simulate typing in the age input
-        await userEvent.type(screen.getByLabelText(/age/i), '3');
+        await userEvent.click(dogOption);
+        await userEvent.type(screen.getByLabelText(/^age$/i), '3');
 
         // Open the select for sex
         const sexSelect = screen.getByLabelText(/sex/i);
@@ -75,10 +95,12 @@ describe('CreatePetEntry Component', () => {
         expect(screen.getByLabelText(/name/i)).toHaveValue('Buddy');
         expect(screen.getByLabelText(/breed/i)).toHaveValue('Golden Retriever');
         expect(screen.getByLabelText(/location/i)).toHaveValue('Bangkok');
-        expect(screen.getByLabelText(/age/i)).toHaveValue(3);
+        expect(screen.getByLabelText(/^age$/i)).toHaveValue(3);
         expect(await screen.findByText('Dog')).toBeInTheDocument(); // Ensure the selected value is displayed
         expect(await screen.findByText('Male')).toBeInTheDocument(); // Ensure the selected value is displayed
+        expect(await screen.findByText('Year')).toBeInTheDocument(); // Ensure the selected value is displayed
     });
+    
 
     // TC2 : Calls createNewPet on button click with correct data
     test('calls createNewPet on button click with correct data', async () => {
@@ -97,7 +119,12 @@ describe('CreatePetEntry Component', () => {
 
         await userEvent.type(screen.getByLabelText(/location/i), 'Bangkok');
 
-        await userEvent.type(screen.getByLabelText(/age/i), '3');
+        const ageSelect = screen.getByLabelText(/age type \*/i);
+        await userEvent.click(ageSelect);
+        const unknowOption = await screen.findByText('Year');
+        await userEvent.click(unknowOption);
+
+        await userEvent.type(screen.getByLabelText(/^age$/i), '3');
 
         const sexSelect = screen.getByLabelText(/sex/i);
         await userEvent.click(sexSelect);
@@ -115,9 +142,106 @@ describe('CreatePetEntry Component', () => {
                     name: 'Buddy',
                     animal: 'Dog',
                     breed: 'Golden Retriever',
-                    age: "3", // Keeping age as a string to match the received value
+                    age: '3', // Keeping age as a string to match the received value
                     location: 'Bangkok',
                     sex: 'Male',
+                    ageType: 'Year',
+                },
+            })
+        );               
+    });
+
+    // TC7 : Calls createNewPet on button click with correct data and Unknown age input
+    test('calls createNewPet on button click with correct data and Unknown age input', async () => {
+        render(<CreatePetEntry />);
+
+        // Simulate typing in the form fields
+        await userEvent.type(screen.getByLabelText(/name/i), 'Buddy');
+
+        const animalSelect = screen.getByLabelText(/animal \*/i);
+        await userEvent.click(animalSelect);
+        const dogOption = await screen.findByText('Dog');
+        await userEvent.click(dogOption);
+
+        await userEvent.clear(screen.getByLabelText(/breed/i));
+        await userEvent.type(screen.getByLabelText(/breed/i), 'Golden Retriever');
+
+        await userEvent.type(screen.getByLabelText(/location/i), 'Bangkok');
+
+        const ageSelect = screen.getByLabelText(/age type \*/i);
+        await userEvent.click(ageSelect);
+        const unknowOption = await screen.findByText('Unknown');
+        await userEvent.click(unknowOption);
+
+        const sexSelect = screen.getByLabelText(/sex/i);
+        await userEvent.click(sexSelect);
+        const maleOption = await screen.findByText('Male');
+        await userEvent.click(maleOption);
+
+        // Click the "Add Pet Entry" button
+        const addButton = screen.getByRole('button', { name: /add pet entry/i });
+        await userEvent.click(addButton);
+
+        // Check if createNewPet was called with the correct data
+        expect(mockCreateNewPet).toHaveBeenCalledWith(
+            JSON.stringify({
+                data: {
+                    name: 'Buddy',
+                    animal: 'Dog',
+                    breed: 'Golden Retriever',
+                    age: 0, // Keeping age as a string to match the received value
+                    location: 'Bangkok',
+                    sex: 'Male',
+                    ageType: 'Unknown',
+                },
+            })
+        );               
+    });
+
+    // TC8 : Calls createNewPet on button click with correct data and Month age input
+    test('calls createNewPet on button click with correct data Month age input', async () => {
+        render(<CreatePetEntry />);
+
+        // Simulate typing in the form fields
+        await userEvent.type(screen.getByLabelText(/name/i), 'Buddy');
+
+        const animalSelect = screen.getByLabelText(/animal \*/i);
+        await userEvent.click(animalSelect);
+        const dogOption = await screen.findByText('Dog');
+        await userEvent.click(dogOption);
+
+        await userEvent.clear(screen.getByLabelText(/breed/i));
+        await userEvent.type(screen.getByLabelText(/breed/i), 'Golden Retriever');
+
+        await userEvent.type(screen.getByLabelText(/location/i), 'Bangkok');
+
+        const ageSelect = screen.getByLabelText(/age type \*/i);
+        await userEvent.click(ageSelect);
+        const unknowOption = await screen.findByText('Month');
+        await userEvent.click(unknowOption);
+
+        await userEvent.type(screen.getByLabelText(/^age$/i), '3');
+
+        const sexSelect = screen.getByLabelText(/sex/i);
+        await userEvent.click(sexSelect);
+        const maleOption = await screen.findByText('Male');
+        await userEvent.click(maleOption);
+
+        // Click the "Add Pet Entry" button
+        const addButton = screen.getByRole('button', { name: /add pet entry/i });
+        await userEvent.click(addButton);
+
+        // Check if createNewPet was called with the correct data
+        expect(mockCreateNewPet).toHaveBeenCalledWith(
+            JSON.stringify({
+                data: {
+                    name: 'Buddy',
+                    animal: 'Dog',
+                    breed: 'Golden Retriever',
+                    age: '3', // Keeping age as a string to match the received value
+                    location: 'Bangkok',
+                    sex: 'Male',
+                    ageType: 'Month',
                 },
             })
         );               

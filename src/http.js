@@ -1,10 +1,11 @@
 import axios from 'axios';
 
-var url = "18.212.221.56";
+const ipAddress = process.env.REACT_APP_STRAPI_IP_ADDRESS || 'localhost';
+const port = process.env.REACT_APP_STRAPI_PORT || 1337;
 
 export default axios.create({
 
-    baseURL: "http://" + url + ":1337/",
+    baseURL: "http://" + ipAddress + ":" + port + "/",
     headers: {
         "Content-type": "application/json"
     }

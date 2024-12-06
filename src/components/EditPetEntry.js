@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Swal from "sweetalert2";
 
 // mui components
 import {
@@ -30,22 +31,51 @@ export default function EditPetEntry() {
     const [age, setAge] = useState("");
     const [location, setLocation] = useState("");
     const [sex, setSex] = useState("");
+    const [ageType, setAgeType] = useState("");
 
     // edit req
     const { updatePet, petId } = usePetContext();
 
-    const data = JSON.stringify({
-        "data": {
-            "name": name,
-            "animal": animal,
-            "breed": breed,
-            "age": age,
-            "location": location,
-            "sex": sex
-        }
-    });
-
     const handleEditPet = () => {
+
+        let finalAge = age;
+        
+        if (ageType === "Unknown") {
+            finalAge = 0;
+        }
+
+        // Validate required fields
+        if (!name || !animal || !breed || !location || !sex || (!finalAge && ageType !== "Unknown")) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'All fields are required.',
+            });
+            return;
+        }
+
+        // Validate age only if ageType is not "Unknown_Age"
+        if (ageType !== "Unknown" && (age < 1 || age > 250)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Age must be between 1 and 250.',
+            });
+            return;
+        }
+
+        const data = JSON.stringify({
+            "data": {
+                "name": name,
+                "animal": animal,
+                "breed": breed,
+                "age": finalAge,
+                "location": location,
+                "sex": sex,
+                "ageType": ageType,
+            }
+        });
+
         updatePet(petId, data);
     };
 
@@ -104,14 +134,35 @@ export default function EditPetEntry() {
                     variant="outlined"
                     onChange={(e)=>setLocation(e.target.value)}
                 />
-                <TextField
-                    required
-                    id="filled-age"
-                    label="Age"
-                    type="number"
-                    variant="outlined"
-                    onChange={(e)=>setAge(e.target.value)}
-                />
+                <FormControl variant="filled" sx={{ m: 1, width: '50ch' }}>
+                    <InputLabel id="select-ageType-label">Age Type *</InputLabel>
+                    <Select
+                        labelId="select-ageType-label"
+                        id="ageType"
+                        value={ageType}
+                        onChange={(e) => setAgeType(e.target.value)}
+                        variant="outlined"
+                        sx={{ textAlign: 'left' }}
+                        inputProps={{ sx: { textAlign: 'left' } }}
+                    >
+                        <MenuItem value="">
+                            <em>None</em>
+                        </MenuItem>
+                        <MenuItem value="Unknown">Unknown</MenuItem>
+                        <MenuItem value="Month">Month</MenuItem>
+                        <MenuItem value="Year">Year</MenuItem>
+                    </Select>
+                </FormControl>
+                <FormControl variant="filled">
+                    <InputLabel id="filled-age-label"></InputLabel>
+                    <TextField
+                        id="filled-age"
+                        label="Age"
+                        type="number"
+                        onChange={(e) => setAge(e.target.value)}
+                        variant="filled"
+                    />
+                </FormControl>
                 <FormControl variant="outlined" sx={{ m: 1, width: '50ch' }}>
                     <InputLabel id="select-sex-label">Sex *</InputLabel>
                     <Select

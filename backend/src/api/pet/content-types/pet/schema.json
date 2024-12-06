@@ -4,7 +4,8 @@
   "info": {
     "singularName": "pet",
     "pluralName": "pets",
-    "displayName": "pet"
+    "displayName": "pet",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -29,8 +30,7 @@
       "type": "string"
     },
     "age": {
-      "type": "integer",
-      "min": 1
+      "type": "integer"
     },
     "sex": {
       "type": "enumeration",
@@ -38,6 +38,10 @@
         "Male",
         "Female"
       ]
+    },
+    "ageType": {
+      "type": "string",
+      "required": true
     }
   }
 }
