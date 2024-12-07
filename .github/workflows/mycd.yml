@@ -86,7 +86,24 @@ jobs:
 
           echo "PUBLIC_IPV4=$INSTANCE_PUBLIC_IP" >> $GITHUB_ENV
           echo "EC2 instance is ready at $INSTANCE_PUBLIC_IP"
-          sleep 5
+      
+      # Wait for SSH to be Ready
+      - name: Wait for SSH to be Ready
+        run: |
+          MAX_RETRIES=30
+          RETRY_INTERVAL=5
+          for ((i=1; i<=MAX_RETRIES; i++)); do
+              echo "Attempt $i: Checking if SSH is ready on ${{ env.PUBLIC_IPV4 }}..."
+              if nc -zv ${{ env.PUBLIC_IPV4 }} 22 2>/dev/null; then
+                  echo "SSH is ready!"
+                  exit 0
+              fi
+              if [[ $i -eq $MAX_RETRIES ]]; then
+                  echo "SSH did not become ready in time. Exiting."
+                  exit 1
+              fi
+              sleep $RETRY_INTERVAL
+          done
 
       # Step 5: Create .env file
       - name: Create .env file
