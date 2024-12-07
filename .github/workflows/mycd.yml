@@ -160,7 +160,7 @@ jobs:
             echo '#!/bin/bash' > /home/ubuntu/update-env-ipv4.sh
             echo 'TOKEN=\$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")' >> /home/ubuntu/update-env-ipv4.sh
             echo 'IPV4=\$(curl -H "X-aws-ec2-metadata-token: \$TOKEN" http://169.254.169.254/latest/meta-data/public-ipv4)' >> /home/ubuntu/update-env-ipv4.sh
-            echo 'sed -i "s/^REACT_APP_PUBLIC_IPV4=.*$/REACT_APP_PUBLIC_IPV4=\$IPV4/" /home/ubuntu/.env' >> /home/ubuntu/update-env-ipv4.sh
+            echo 'sed -i "s/^REACT_APP_STRAPI_IP_ADDRESS=.*$/REACT_APP_STRAPI_IP_ADDRESS=\$IPV4/" /home/ubuntu/.env' >> /home/ubuntu/update-env-ipv4.sh
             echo 'cd /home/ubuntu' >> /home/ubuntu/update-env-ipv4.sh
             echo 'sudo docker stop react-appv2' >> /home/ubuntu/update-env-ipv4.sh
             echo 'sudo docker rm react-appv2' >> /home/ubuntu/update-env-ipv4.sh
