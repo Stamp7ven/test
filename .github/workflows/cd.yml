@@ -22,26 +22,26 @@ jobs:
       - name: Check if Docker Image petadopt_frontend Exists
         id: check_image_frontend
         run: |
-          REPOSITORY="${{ secrets.DOCKER_USERNAME }}/petadopt_frontend"  
+          REPOSITORY="${{ secrets.DOCKER_USERNAME }}/react-appv2"  
           TAG="latest"
           RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -u "${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_TOKEN }}" https://hub.docker.com/v2/repositories/${REPOSITORY}/tags/${TAG}/)
           if [ "$RESPONSE" -ne 200 ]; then
               echo "Docker image not found. Exiting workflow."
               exit 1
           fi
-          echo "Docker image petadopt_frontend exists. Proceeding to deployment."
+          echo "Docker image react-appv2 exists. Proceeding to deployment."
 
       - name: Check if Docker Image petadopt_backend Exists
         id: check_image_backend
         run: |
-          REPOSITORY="${{ secrets.DOCKER_USERNAME }}/petadopt_backend"  
+          REPOSITORY="${{ secrets.DOCKER_USERNAME }}/strapi-app"  
           TAG="latest"
           RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -u "${{ secrets.DOCKER_USERNAME }}:${{ secrets.DOCKER_TOKEN }}" https://hub.docker.com/v2/repositories/${REPOSITORY}/tags/${TAG}/)
           if [ "$RESPONSE" -ne 200 ]; then
               echo "Docker image not found. Exiting workflow."
               exit 1
           fi
-          echo "Docker image petadopt_backend exists. Proceeding to deployment."
+          echo "Docker image strapi-app exists. Proceeding to deployment."
 
       # Step 3: Set AWS Credentials in Environment Variables
       - name: Set AWS Credentials
