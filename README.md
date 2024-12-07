@@ -518,68 +518,61 @@ The `test-suite.yml` file used for GitHub Actions CI is stored in `.github/workf
 - **Unit Testing**: Focuses on individual functions or modules to confirm they work as expected in isolation. Each unit is tested with a range of inputs to ensure reliable and consistent behavior, catching issues early in development.
 
 ```
-PASS  src/__test__/CreatePetEntry.test.js (12.769 s)
-  ● Console
-    console.log
-      Submitting data:  {"data":{"name":"Buddy","animal":"Dog","breed":"Golden Retriever","age":"3","location":"Bangkok","sex":"Male"}}
-      at handleCreateNewPet (src/components/CreatePetEntry.js:58:17)
-    console.log
-      All fields are required.
-      at handleCreateNewPet (src/components/CreatePetEntry.js:42:21)
+PASS src/__test__/EditPetEntry.test.js (10.485 s)
+PASS src/__test__/CreatePetEntry.test.js (11.672 s)
+-------------------|---------|----------|---------|---------|-------------------
+File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------|---------|----------|---------|---------|-------------------
+All files          |   87.09 |    78.94 |      95 |   87.09 |                   
+ BottomNav.js      |      75 |      100 |      50 |      75 | 20                
+ CreatePetEntry.js |   93.33 |    81.81 |     100 |   93.33 | 62-67             
+ EditPetEntry.js   |   82.14 |       75 |     100 |   82.14 | 44,49-54,59-64    
+-------------------|---------|----------|---------|---------|-------------------
 
- PASS  src/__test__/EditPetEntry.test.js (13.49 s)
- -------------------|---------|----------|---------|---------|-------------------
- File               | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
- -------------------|---------|----------|---------|---------|-------------------
- All files          |   97.67 |      100 |   94.44 |   97.67 |                   
-  BottomNav.js      |      75 |      100 |      50 |      75 | 20                
-  CreatePetEntry.js |     100 |      100 |     100 |     100 |                   
-  EditPetEntry.js   |     100 |      100 |     100 |     100 |                   
- -------------------|---------|----------|---------|---------|-------------------
-
- Test Suites: 2 passed, 2 total
- Tests:       8 passed, 8 total
- Snapshots:   0 total
- Time:        14.75 s
+Test Suites: 2 passed, 2 total
+Tests:       10 passed, 10 total
+Snapshots:   0 total
+Time:        12.338 s
+Ran all test suites.
 ```
 
 - **Integration Testing**: Verifies that different parts of the API interact correctly. By testing how modules work together, integration testing ensures data flows smoothly between components, identifying issues that may appear when components are combined.
 
 ```
-PASS  tests/pet.test.js (7.835 s)
+PASS tests/pet.test.js
   Pet API
-    ✓ should create a new pet entry (88 ms)
-    ✓ should update an existing pet entry (44 ms)
-    ✓ should retrieve all pets (13 ms)
-    ✓ should handle missing required fields (10 ms)
-    ✓ should handle updating non-existing pet (12 ms)
-    ✓ should retrieve a pet by ID (12 ms)
-    ✓ should delete a pet entry (31 ms)
-    ✓ should handle retrieving a non-existing pet by ID (13 ms)
+    ✓ should create a new pet entry (60 ms)
+    ✓ should update an existing pet entry (21 ms)
+    ✓ should retrieve all pets (10 ms)
+    ✓ should handle missing required fields (8 ms)
+    ✓ should handle updating non-existing pet (8 ms)
+    ✓ should retrieve a pet by ID (10 ms)
+    ✓ should delete a pet entry (12 ms)
+    ✓ should handle retrieving a non-existing pet by ID (11 ms)
 
- -------------------------|---------|----------|---------|---------|-------------------
- File                     | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
- -------------------------|---------|----------|---------|---------|-------------------
- All files                |     100 |      100 |     100 |     100 |                   
-  config                  |     100 |      100 |     100 |     100 |                   
-   admin.js               |     100 |      100 |     100 |     100 |                   
-   api.js                 |     100 |      100 |     100 |     100 |                   
-   database.js            |     100 |      100 |     100 |     100 |                   
-   middlewares.js         |     100 |      100 |     100 |     100 |                   
-   server.js              |     100 |      100 |     100 |     100 |                   
-  src                     |     100 |      100 |     100 |     100 |                   
-   index.js               |     100 |      100 |     100 |     100 |                   
-  src/api/pet/controllers |     100 |      100 |     100 |     100 |                   
-   pet.js                 |     100 |      100 |     100 |     100 |                   
-  src/api/pet/routes      |     100 |      100 |     100 |     100 |                   
-   pet.js                 |     100 |      100 |     100 |     100 |                   
-  src/api/pet/services    |     100 |      100 |     100 |     100 |                   
-   pet.js                 |     100 |      100 |     100 |     100 |                   
- -------------------------|---------|----------|---------|---------|-------------------
- Test Suites: 1 passed, 1 total
- Tests:       8 passed, 8 total
- Snapshots:   0 total
- Time:        7.96 s
+-------------------------|---------|----------|---------|---------|-------------------
+File                     | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+-------------------------|---------|----------|---------|---------|-------------------
+All files                |     100 |      100 |     100 |     100 |                   
+ config                  |     100 |      100 |     100 |     100 |                   
+  admin.js               |     100 |      100 |     100 |     100 |                   
+  api.js                 |     100 |      100 |     100 |     100 |                   
+  database.js            |     100 |      100 |     100 |     100 |                   
+  middlewares.js         |     100 |      100 |     100 |     100 |                   
+  server.js              |     100 |      100 |     100 |     100 |                   
+ src                     |     100 |      100 |     100 |     100 |                   
+  index.js               |     100 |      100 |     100 |     100 |                   
+ src/api/pet/controllers |     100 |      100 |     100 |     100 |                   
+  pet.js                 |     100 |      100 |     100 |     100 |                   
+ src/api/pet/routes      |     100 |      100 |     100 |     100 |                   
+  pet.js                 |     100 |      100 |     100 |     100 |                   
+ src/api/pet/services    |     100 |      100 |     100 |     100 |                   
+  pet.js                 |     100 |      100 |     100 |     100 |                   
+-------------------------|---------|----------|---------|---------|-------------------
+Test Suites: 1 passed, 1 total
+Tests:       8 passed, 8 total
+Snapshots:   0 total
+Time:        3.693 s
 ```
 - **Continuous Integration**
   As part of our CI setup, every push or pull request automatically triggers the test suite using GitHub Actions (configured in `.github/workflows/test-suite.yml`). This CI process runs both unit and integration tests across multiple environments, providing:
