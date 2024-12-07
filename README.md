@@ -721,9 +721,9 @@ The key workflows in this project include:
 	2. Log in to DockerHub and push the images tagged as latest.
 	3. Run all tests using Jest and log results.
 
-- **Deployment Workflow**: cd.yml  
+- **Deployment Workflow**: mycd.yml  
   - Purpose: Deploys the application to staging and production environments.
-  - Trigger A push is made to any branch and Manually triggered via workflow_dispatch.
+  - Trigger A push is made to main branch and Manually triggered via workflow_dispatch.
   - Steps:
 	1. Verify availability of Docker images on DockerHub.
 	2. Configure AWS credentials using GitHub Secrets.
