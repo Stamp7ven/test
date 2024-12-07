@@ -144,9 +144,11 @@ jobs:
             echo 'TOKEN=\$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")' >> /home/ubuntu/update-env-ipv4.sh
             echo 'IPV4=\$(curl -H "X-aws-ec2-metadata-token: \$TOKEN" http://169.254.169.254/latest/meta-data/public-ipv4)' >> /home/ubuntu/update-env-ipv4.sh
             echo 'sed -i "s/^REACT_APP_PUBLIC_IPV4=.*$/REACT_APP_PUBLIC_IPV4=\$IPV4/" /home/ubuntu/.env' >> /home/ubuntu/update-env-ipv4.sh
+            echo 'cd /home/ubuntu' >> /home/ubuntu/update-env-ipv4.sh
             echo 'sudo docker stop react-appv2' >> /home/ubuntu/update-env-ipv4.sh
             echo 'sudo docker rm react-appv2' >> /home/ubuntu/update-env-ipv4.sh
             echo 'sudo docker run -d --name react-appv2 --env-file /home/ubuntu/.env -p 3000:3000 teerapat1811/react-appv2:latest' >> /home/ubuntu/update-env-ipv4.sh
+            echo 'docker run -d --name strapi-app --env-file /home/ubuntu/.env -p 1337:1337 teerapat1811/strapi-app:latest' >> /home/ubuntu/update-env-ipv4.sh
       
             # Change the permission of the script to make it executable
             chmod +x /home/ubuntu/update-env-ipv4.sh
