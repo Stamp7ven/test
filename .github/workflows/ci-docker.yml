@@ -54,11 +54,11 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/petadopt_frontend:latest .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/react-appv2:latest .
 
       - name: Push Docker Image to DockerHub
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/petadopt_frontend:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/react-appv2:latest
 
   build-docker-backend:
 #    needs: test-source-code #ต้อง test-source-code ก่อน build docker image
@@ -77,12 +77,12 @@ jobs:
       - name: Build Docker Image
         working-directory: ./backend
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/petadopt_backend:latest .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/strapi-app:latest .
 
       - name: Push Docker Image to DockerHub
         working-directory: ./backend
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/petadopt_backend:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/strapi-app:latest
 
   # Step 3: Test Docker Image
   test-docker-image-backend:
@@ -98,14 +98,14 @@ jobs:
 
       - name: Pull and Run Docker Image
         run: |
-          docker pull ${{ secrets.DOCKER_USERNAME }}/petadopt_backend:latest
+          docker pull ${{ secrets.DOCKER_USERNAME }}/strapi-app:latest
           docker run -d --name test-backend \
           -e APP_KEYS=${{ secrets.APP_KEYS }} \
           -e API_TOKEN_SALT=${{ secrets.API_TOKEN_SALT }} \
           -e ADMIN_JWT_SECRET=${{ secrets.ADMIN_JWT_SECRET }} \
           -e TRANSFER_TOKEN_SALT=${{ secrets.TRANSFER_TOKEN_SALT }} \
           -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
-          ${{ secrets.DOCKER_USERNAME }}/petadopt_backend:latest
+          ${{ secrets.DOCKER_USERNAME }}/strapi-app:latest
 
       - name: Run Automated Tests in Docker Container
         run: |
@@ -129,8 +129,8 @@ jobs:
 
       - name: Pull and Run Docker Image
         run: |
-          docker pull ${{ secrets.DOCKER_USERNAME }}/petadopt_frontend:latest
-          docker run -d --name test-frontend ${{ secrets.DOCKER_USERNAME }}/petadopt_frontend:latest
+          docker pull ${{ secrets.DOCKER_USERNAME }}/react-appv2:latest
+          docker run -d --name test-frontend ${{ secrets.DOCKER_USERNAME }}/react-appv2:latest
 
       - name: Run Automated Tests in Docker Container
         run: |
