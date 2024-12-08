@@ -155,7 +155,7 @@ export default function CreatePetEntry() {
                         <MenuItem value="Cat">Cat</MenuItem>
                         <MenuItem value="Dog">Dog</MenuItem>
                         <MenuItem value="Bird">Bird</MenuItem>
-                        <MenuItem value="rabbit">Bird</MenuItem>
+                        <MenuItem value="Rabbit">Rabbit</MenuItem>
                     </Select>
                 </FormControl>
                 <TextField
