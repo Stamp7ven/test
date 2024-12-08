@@ -22,7 +22,7 @@ on:
       - '!**/README*' 
       
   workflow_run:
-    workflows: ["Parent Workflow"] # ชื่อ Workflow ที่ต้องรันก่อน
+    workflows: ["ci-docker"] # ชื่อ Workflow ที่ต้องรันก่อน
     types:
       - completed   
       
