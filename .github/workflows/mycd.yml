@@ -1,6 +1,10 @@
 name: CD - Deploy to EC2 with Docker (Human trigger)
 
 on:
+  workflow_run:
+    workflows: ["ci-docker"] # ชื่อ Workflow ที่ต้องรันก่อน
+    types:
+      - completed   
   push:
     branches:
       - main
@@ -20,12 +24,7 @@ on:
       - '!**/*.txt'      
       - '!**/*.docx'     
       - '!**/README*' 
-      
-  workflow_run:
-    workflows: ["ci-docker"] # ชื่อ Workflow ที่ต้องรันก่อน
-    types:
-      - completed   
-      
+            
   workflow_dispatch:
 
 jobs:
