@@ -20,8 +20,8 @@ export const PetProvider = ({children}) => {
             if (response.status === 200) {
                 Swal.fire({
                     icon: 'success',
-                    title: 'Success yeah!',
-                    text: 'Pet created successfully yeah!',
+                    title: 'Success!',
+                    text: 'Pet created successfully!',
                     confirmButtonColor: '#28a745',
                 });
             } else {
