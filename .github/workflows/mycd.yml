@@ -21,6 +21,11 @@ on:
       - '!**/*.docx'     
       - '!**/README*' 
       
+  workflow_run:
+    workflows: ["Parent Workflow"] # ชื่อ Workflow ที่ต้องรันก่อน
+    types:
+      - completed   
+      
   workflow_dispatch:
 
 jobs:
