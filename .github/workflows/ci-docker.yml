@@ -3,14 +3,24 @@ name: CI - Test Source Code and Docker Image
 on:
   push:
     branches:
-      - '*'
-    paths-ignore:
-      - 'README.md'
+      - main
+    paths:
+      - '**/*'
+      - '!**/*.md'       
+      - '!**/*.txt'      
+      - '!**/*.docx'     
+      - '!**/README*'    
+
   pull_request:
     branches:
-      - '*'
-    paths-ignore:
-      - 'README.md'
+      - main
+    paths:
+      - '**/*'           
+      - '!**/*.md'       
+      - '!**/*.txt'      
+      - '!**/*.docx'     
+      - '!**/README*' 
+      
   workflow_dispatch:
 
 jobs:
