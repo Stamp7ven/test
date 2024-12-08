@@ -5,25 +5,7 @@ on:
     workflows: ["ci-docker"] # ชื่อ Workflow ที่ต้องรันก่อน
     types:
       - completed   
-  push:
-    branches:
-      - main
-    paths:
-      - '**/*'
-      - '!**/*.md'       
-      - '!**/*.txt'      
-      - '!**/*.docx'     
-      - '!**/README*'    
 
-  pull_request:
-    branches:
-      - main
-    paths:
-      - '**/*'           
-      - '!**/*.md'       
-      - '!**/*.txt'      
-      - '!**/*.docx'     
-      - '!**/README*' 
             
   workflow_dispatch:
 
